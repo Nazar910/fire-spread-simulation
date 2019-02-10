@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>lab</title>
+    <script src="three.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <button id="switch-view">Switch view</button>
+    <canvas id="graphic"></canvas>
+    <canvas id="chart"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+<script>
+    let showGraphic = false;
+    const COLORS = {
+        red: 'rgb(255, 99, 132)',
+        blue: 'rgb(54, 162, 235)',
+        grey: 'rgb(201, 203, 207)',
+        wheat: 'rgb(245,222,179)',
+        orangered: 'rgb(255,69,0)',
+        orange: 'rgb(255,165,0)',
+        saddlebrown: 'rgb(139,69,19)',
+        olivedrab: 'rgb(107,142,35)'
+    }
+    const { color } = Chart.helpers;
+
+    function alpha(rgb, koef) {
+        return color(rgb).alpha(koef).rgbString();
+    }
+    function drawChart() {
+        var ctx = document.getElementById("chart").getContext('2d');
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight / 2;
+        var chart = new Chart.Line(ctx, {
+            data: {
+                datasets: [{
+                    label: 'fire',
+                    borderColor: COLORS.red,
+                    backgroundColor: color(COLORS.red).alpha(0.2).rgbString(),
+                    data: [{
+                        x: -1,
+                        y: 1
+                    }, {
+                        x: 1,
+                        y: 1
+                    }, {
+                        x: 1,
+                        y: -1
+                    }, {
+                        x: -1,
+                        y: -1
+                    }, {
+                        x: -1,
+                        y: 1
+                    }]
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom'
+                    }]
+                }
+            }
+        });
+    }
+
+    const imageBuff = [];
+    const N = 14;
+    for (let i = 0; i < N; i++) {
+        imageBuff[i] = [];
+        for (let j = 0; j < N; j++) {
+            imageBuff[i][j] = COLORS.olivedrab;
+        }
+    }
+    const shouldMoveDown = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveDown[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveDown[i][j] = 0;
+        }
+    }
+    const shouldMoveLeft = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveLeft[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveLeft[i][j] = 0;
+        }
+    }
+    const shouldMoveRight = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveRight[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveRight[i][j] = 0;
+        }
+    }
+    const shouldMoveUp = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveUp[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveUp[i][j] = 0;
+        }
+    }
+    const shouldMoveUpLeft = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveUpLeft[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveUpLeft[i][j] = 0;
+        }
+    }
+    const shouldMoveUpRight = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveUpRight[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveUpRight[i][j] = 0;
+        }
+    }
+    const shouldMoveDownRight = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveDownRight[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveDownRight[i][j] = 0;
+        }
+    }
+    const shouldMoveDownLeft = [];
+    for (let i = 0; i < N; i++) {
+        shouldMoveDownLeft[i] = [];
+        for (let j = 0; j < N; j++) {
+            shouldMoveDownLeft[i][j] = 0;
+        }
+    }
+
+    function getFireData() {
+        return fireData;
+    }
+
+    function getWarehouseData() {
+        return [
+            { x: 3, y: -5 },
+            { x: 3, y: -3 },
+            { x: 4, y: -2 },
+            { x: 5, y: -2 },
+            { x: 5, y: -5 },
+            { x: 3, y: -5 }
+        ];
+    }
+
+    function drawBubble() {
+        var ctx = document.getElementById("graphic").getContext('2d');
+        ctx.canvas.width = window.innerWidth;
+        ctx.canvas.height = window.innerHeight - 20;
+        const R = 30;
+        const forestData = [];
+        const fireData = [];
+        const housingData = [];
+        const airportData = [];
+        const warehouseData = [];
+        const lakeData = [];
+        for (let i = 0; i < imageBuff.length; i++) {
+            for (let j = 0; j < imageBuff[i].length; j++) {
+                const item = {
+                    x: i - parseInt(imageBuff.length / 2),
+                    y: parseInt(imageBuff[i].length / 2) - j,
+                    r: R
+                };
+                if (imageBuff[i][j] === COLORS.olivedrab) {
+                    forestData.push(item);
+                } else if (imageBuff[i][j] === COLORS.orangered) {
+                    fireData.push(item);
+                } else if (imageBuff[i][j] === COLORS.wheat) {
+                    housingData.push(item);
+                } else if (imageBuff[i][j] === COLORS.grey) {
+                    airportData.push(item);
+                } else if (imageBuff[i][j] === COLORS.saddlebrown) {
+                    warehouseData.push(item);
+                } else if (imageBuff[i][j] === COLORS.blue) {
+                    lakeData.push(item);
+                }
+            }
+        }
+        var myBubbleChart = new Chart(ctx, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'forest',
+                        data: forestData,
+                        borderColor: COLORS.olivedrab,
+                        backgroundColor: COLORS.olivedrab
+                    },
+                    {
+                        label: 'fire',
+                        data: fireData,
+                        borderColor: COLORS.orangered,
+                        backgroundColor: COLORS.orangered
+                    },
+                    {
+                        label: 'housing area',
+                        data: housingData,
+                        borderColor: COLORS.wheat,
+                        backgroundColor: COLORS.wheat
+                    },
+                    {
+                        label: 'airport',
+                        data: airportData,
+                        borderColor: COLORS.grey,
+                        backgroundColor: COLORS.grey
+                    },
+                    {
+                        label: 'warehouse',
+                        data: warehouseData,
+                        borderColor: COLORS.saddlebrown,
+                        backgroundColor: COLORS.saddlebrown
+                    },
+                    {
+                        label: 'lake',
+                        data: lakeData,
+                        borderColor: COLORS.blue,
+                        backgroundColor: COLORS.blue
+                    },
+                ]
+            },
+            options: {
+                elements: {
+                    point: {
+                        pointStyle: 'rect'
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        ticks: {
+                            suggestedMin: -8,
+                            suggestedMax: 8,
+                            stepSize: 1
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    function searchForFireAndApply(applyFunc) {
+        for (let i = 1; i < N - 1; i++) {
+            for (let j = 1; j < N - 1; j++) {
+                if (imageBuff[i][j] === COLORS.orangered) {
+                    applyFunc(i, j);
+                }
+            }
+        }
+    }
+
+    function South(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveDown[i][j] < 1) {
+                shouldMoveDown[i][j] += speed / 10;
+            }
+            if (shouldMoveDown[i][j] >= 1) {
+                imageBuff[i][j + 1] = COLORS.orangered;
+            }
+        });
+    }
+
+    function West(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveLeft[i][j] < 1) {
+                shouldMoveLeft[i][j] += speed / 10;
+            }
+            if (shouldMoveLeft[i][j] >= 1) {
+                imageBuff[i - 1][j] = COLORS.orangered;
+            }
+        });
+    }
+
+    function East(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveRight[i][j] < 1) {
+                shouldMoveRight[i][j] += speed / 10;
+            }
+            if (shouldMoveRight[i][j] >= 1) {
+                imageBuff[i + 1][j] = COLORS.orangered;
+            }
+        });
+    }
+
+    function North(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveUp[i][j] < 1) {
+                shouldMoveUp[i][j] += speed / 10;
+            }
+            if (shouldMoveUp[i][j] >= 1) {
+                imageBuff[i][j - 1] = COLORS.orangered;
+            }
+        });
+    }
+
+    function NorthWest(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveUpLeft[i][j] < 1) {
+                shouldMoveUpLeft[i][j] += speed / 10;
+            }
+            if (shouldMoveUpLeft[i][j] >= 1) {
+                imageBuff[i - 1][j - 1] = COLORS.orangered;
+            }
+        });
+    }
+
+    function NorthEast(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveUpRight[i][j] < 1) {
+                shouldMoveUpRight[i][j] += speed / 10;
+            }
+            if (shouldMoveUpRight[i][j] >= 1) {
+                imageBuff[i + 1][j - 1] = COLORS.orangered;
+            }
+        });
+    }
+
+    function SouthWest(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveDownLeft[i][j] < 1) {
+                shouldMoveDownLeft[i][j] += speed / 10;
+            }
+            if (shouldMoveDownLeft[i][j] >= 1) {
+                imageBuff[i - 1][j + 1] = COLORS.orangered;
+            }
+        });
+    }
+
+    function SouthEast(speed) {
+        searchForFireAndApply((i, j) => {
+            if (shouldMoveDownRight[i][j] < 1) {
+                shouldMoveDownRight[i][j] += speed / 10;
+            }
+            if (shouldMoveDownRight[i][j] >= 1) {
+                imageBuff[i + 1][j + 1] = COLORS.orangered;
+            }
+        });
+    }
+
+    function colorCell(i, j, color) {
+        imageBuff[i][j] = color;
+    }
+
+    function drawCharts() {
+        // drawChart();
+        //housing area
+        [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+            [0, 3],
+            [0, 4],
+            [1, 0],
+            [1, 1],
+            [1, 2],
+            [1, 3],
+            [2, 0],
+            [2, 1],
+            [2, 2],
+            [3, 0],
+            [3, 1],
+            [4, 0]
+        ].forEach(row => colorCell(row[0], row[1], COLORS.wheat));
+        //airport
+        [
+            [0, 13],
+            [1, 13],
+            [2, 13],
+            [3, 13],
+            [4, 13],
+            [0, 12],
+            [1, 12],
+            [2, 12],
+            [3, 12],
+            [4, 12],
+            [0, 11],
+            [1, 11],
+            [2, 11],
+            [3, 11],
+            [4, 11],
+            [0, 10],
+            [1, 10],
+            [2, 10],
+            [0, 9],
+            [1, 9],
+            [0, 8],
+            [1, 8]
+        ].forEach(row => colorCell(row[0], row[1], COLORS.grey));
+        //warehouse
+        [
+            [10, 13],
+            [11, 13],
+            [12, 13],
+            [10, 12],
+            [11, 12],
+            [12, 12],
+            [11, 11],
+            [12, 11],
+            [12, 10]
+        ].forEach(row => colorCell(row[0], row[1], COLORS.saddlebrown));
+        //lake
+        [
+            [10, 1],
+            [11, 1],
+            [12, 1],
+            [10, 2],
+            [11, 2],
+            [12, 2]
+        ].forEach(row => colorCell(row[0], row[1], COLORS.blue));
+
+        //draw fire point
+        colorCell(7, 7, COLORS.orangered);
+        East(0.25);
+        West(1);
+        SouthWest(0.25);
+        East(1);
+        NorthWest(0.5);
+        SouthWest(1);
+        NorthEast(2);
+        NorthWest(1.25);
+        West(0.25);
+        SouthWest(0.25);
+        drawBubble();
+    }
+
+    window.onload = () => {
+        const button = document.getElementById('switch-view');
+        const graphic = document.getElementById('graphic');
+        const chart = document.getElementById('chart');
+        button.addEventListener('click', function () {
+            if (showGraphic) {
+                graphic.style.display = 'block';
+                chart.style.display = 'none';
+            } else {
+                graphic.style.display = 'none';
+                chart.style.display = 'block';
+            }
+            showGraphic = !showGraphic;
+        });
+        drawCharts();
+    };
+
+</script>
+
+</body>
+</html>

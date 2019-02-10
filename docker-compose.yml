@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  nginx-realtime:
+    container_name: nginx-realtime
+    image: nginx-realtime
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - 5050:80
+    volumes:
+      - "./index.html:/usr/app/index.html"
