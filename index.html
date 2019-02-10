@@ -255,13 +255,24 @@
             }
         }
     }
+    function countColorCells(color) {
+        let count = 0;
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                if (imageBuff[i][j] === color) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 
     function South(speed) {
         searchForFireAndApply((i, j) => {
             if (shouldMoveDown[i][j] < 1) {
                 shouldMoveDown[i][j] += speed / 10;
             }
-            if (shouldMoveDown[i][j] >= 1) {
+            if (shouldMoveDown[i][j] >= 1 && imageBuff[i][j + 1] !== COLORS.blue) {
                 imageBuff[i][j + 1] = COLORS.orangered;
             }
         });
@@ -272,7 +283,7 @@
             if (shouldMoveLeft[i][j] < 1) {
                 shouldMoveLeft[i][j] += speed / 10;
             }
-            if (shouldMoveLeft[i][j] >= 1) {
+            if (shouldMoveLeft[i][j] >= 1 && imageBuff[i - 1][j] !== COLORS.blue) {
                 imageBuff[i - 1][j] = COLORS.orangered;
             }
         });
@@ -283,7 +294,7 @@
             if (shouldMoveRight[i][j] < 1) {
                 shouldMoveRight[i][j] += speed / 10;
             }
-            if (shouldMoveRight[i][j] >= 1) {
+            if (shouldMoveRight[i][j] >= 1 && imageBuff[i + 1][j] !== COLORS.blue) {
                 imageBuff[i + 1][j] = COLORS.orangered;
             }
         });
@@ -294,7 +305,7 @@
             if (shouldMoveUp[i][j] < 1) {
                 shouldMoveUp[i][j] += speed / 10;
             }
-            if (shouldMoveUp[i][j] >= 1) {
+            if (shouldMoveUp[i][j] >= 1 && imageBuff[i][j - 1] !== COLORS.blue) {
                 imageBuff[i][j - 1] = COLORS.orangered;
             }
         });
@@ -305,7 +316,7 @@
             if (shouldMoveUpLeft[i][j] < 1) {
                 shouldMoveUpLeft[i][j] += speed / 10;
             }
-            if (shouldMoveUpLeft[i][j] >= 1) {
+            if (shouldMoveUpLeft[i][j] >= 1 && imageBuff[i - 1][j - 1] !== COLORS.blue) {
                 imageBuff[i - 1][j - 1] = COLORS.orangered;
             }
         });
@@ -316,7 +327,7 @@
             if (shouldMoveUpRight[i][j] < 1) {
                 shouldMoveUpRight[i][j] += speed / 10;
             }
-            if (shouldMoveUpRight[i][j] >= 1) {
+            if (shouldMoveUpRight[i][j] >= 1 && imageBuff[i + 1][j - 1] !== COLORS.blue) {
                 imageBuff[i + 1][j - 1] = COLORS.orangered;
             }
         });
@@ -327,7 +338,7 @@
             if (shouldMoveDownLeft[i][j] < 1) {
                 shouldMoveDownLeft[i][j] += speed / 10;
             }
-            if (shouldMoveDownLeft[i][j] >= 1) {
+            if (shouldMoveDownLeft[i][j] >= 1 && imageBuff[i - 1][j + 1] !== COLORS.blue) {
                 imageBuff[i - 1][j + 1] = COLORS.orangered;
             }
         });
@@ -338,7 +349,7 @@
             if (shouldMoveDownRight[i][j] < 1) {
                 shouldMoveDownRight[i][j] += speed / 10;
             }
-            if (shouldMoveDownRight[i][j] >= 1) {
+            if (shouldMoveDownRight[i][j] >= 1 && imageBuff[i + 1][j + 1] !== COLORS.blue) {
                 imageBuff[i + 1][j + 1] = COLORS.orangered;
             }
         });
@@ -414,19 +425,32 @@
             [11, 2],
             [12, 2]
         ].forEach(row => colorCell(row[0], row[1], COLORS.blue));
-
+        const INITIAL_COUNT = {
+            forest: countColorCells(COLORS.olivedrab),
+            housingArea: countColorCells(COLORS.wheat),
+            airport: countColorCells(COLORS.grey),
+            warehouse: countColorCells(COLORS.saddlebrown)
+        };
         //draw fire point
         colorCell(7, 7, COLORS.orangered);
-        East(0.25);
-        West(1);
-        SouthWest(0.25);
-        East(1);
-        NorthWest(0.5);
-        SouthWest(1);
-        NorthEast(2);
-        NorthWest(1.25);
-        West(0.25);
-        SouthWest(0.25);
+        for (let t = 1; t < 30; t++) {
+            East(0.25);
+            West(1);
+            SouthWest(0.25);
+            East(1);
+            NorthWest(0.5);
+            SouthWest(1);
+            NorthEast(2);
+            NorthWest(1.25);
+            West(0.25);
+            SouthWest(0.25);
+        }
+        const AFTER_FIRE_COUNT = {
+            forest: countColorCells(COLORS.olivedrab),
+            housingArea: countColorCells(COLORS.wheat),
+            airport: countColorCells(COLORS.grey),
+            warehouse: countColorCells(COLORS.saddlebrown)
+        };
         drawBubble();
     }
 
