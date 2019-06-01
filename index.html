@@ -120,25 +120,10 @@
         }
     }
 
-    function getFireData() {
-        return fireData;
-    }
-
-    function getWarehouseData() {
-        return [
-            { x: 3, y: -5 },
-            { x: 3, y: -3 },
-            { x: 4, y: -2 },
-            { x: 5, y: -2 },
-            { x: 5, y: -5 },
-            { x: 3, y: -5 }
-        ];
-    }
-
     function drawBubble() {
         var ctx = document.getElementById("graphic").getContext('2d');
         ctx.canvas.width = window.innerWidth;
-        ctx.canvas.height = window.innerHeight - 20;
+        ctx.canvas.height = window.innerHeight / 2;
         const R = 30;
         const forestData = [];
         const fireData = [];
@@ -225,7 +210,8 @@
                             stepSize: 1
                         }
                     }]
-                }
+                },
+                animation: false
             }
         });
     }
@@ -343,7 +329,7 @@
         imageBuff[i][j] = color;
     }
 
-    function drawCharts() {
+    async function drawCharts() {
         // drawChart();
         //housing area
         [
@@ -424,7 +410,9 @@
         //draw fire point
         colorCell(7, 7, COLORS.orangered);
         const costs = [];
-        for (let t = 1; t < 30; t++) {
+        drawBubble();
+        for (let t = 1; t < 35; t++) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
             East(0.25);
             West(1);
             SouthWest(0.25);
@@ -445,9 +433,9 @@
                 COSTS.housingArea * Math.abs(INITIAL_COUNT.housingArea - AFTER_FIRE_COUNT.housingArea) +
                 COSTS.airport * Math.abs(INITIAL_COUNT.airport - AFTER_FIRE_COUNT.airport) +
                 COSTS.warehouse * Math.abs(INITIAL_COUNT.warehouse - AFTER_FIRE_COUNT.warehouse));
+            drawBubble();
+            drawChart(costs);
         }
-        drawChart(costs);
-        drawBubble();
     }
 
     window.onload = () => {
